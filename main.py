@@ -27,26 +27,27 @@ def read_root():
 @app.post("/Info/")
 def create_item(info: Info):
     with MongoClient() as client:
-        msg_collection = client[DB][EMP_COLLECTION]
-        result = msg_collection.insert_one(info.dict())
+        emp_collection = client[DB][EMP_COLLECTION]
+        result = emp_collection.insert_one(info.dict())
         ack = result.acknowledged
         return {"insertion": ack}
 
 
-@app.get("/Info/{emp_id}")
+@app.get("/Info/{emp_id}", response_model=list[Info])
 def read_item(emp_id: int):
     with MongoClient() as client:
-        msg_collection = client[DB][EMP_COLLECTION]
-        result = msg_collection.find({"emp_id": emp_id})
-        ack = result.acknowledged
-        return ({Info.dict()} , ack)
+        emp_collection = client[DB][EMP_COLLECTION]
+        emp_list = emp_collection.find({"emp_id": emp_id})
+        response_emp_list =[]
+        for emp in emp_list:
+            response_emp_list.append(Info(**emp))
+        return response_emp_list
 
 
 @app.put("/Info/{emp_id}")
 def update_info(emp_id: int, loc: str):
     with MongoClient() as client:
-        msg_collection = client[DB][EMP_COLLECTION]
-        result = msg_collection.update({"emp_id": emp_id}, {"loc": loc})
+        emp_collection = client[DB][EMP_COLLECTION]
+        result = emp_collection.update({"emp_id": emp_id}, {"loc": loc})
         ack = result.acknowledged
         return {"Updated": ack}
-
