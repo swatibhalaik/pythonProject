@@ -51,3 +51,4 @@ def update_info(emp_id: int, loc: str):
         result = emp_collection.update({"emp_id": emp_id}, {"loc": loc})
         ack = result.acknowledged
         return {"Updated": ack}
+ #add this to test
